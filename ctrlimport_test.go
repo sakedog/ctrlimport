@@ -30,7 +30,7 @@ func TestAnalyzer(t *testing.T) {
 	})
 
 	t.Run("pakcage_test", func(t *testing.T) {
-		if err := ctrlimport.Analyzer.Flags.Set("ignore-test", "true"); err != nil {
+		if err := ctrlimport.Analyzer.Flags.Set("ignoretest", "true"); err != nil {
 			t.Fatal(err)
 		}
 

@@ -18,7 +18,7 @@ var (
 )
 
 func init() {
-	Analyzer.Flags.BoolVar(&ignoreTest, "ignore-test", false, "ignore test files?")
+	Analyzer.Flags.BoolVar(&ignoreTest, "ignoretest", false, "ignore test files?")
 	Analyzer.Flags.Func("ok", "allowed import paths", func(ok string) error { oks = append(oks, ok); return nil })
 	Analyzer.Flags.Func("ng", "prohibited import paths", func(ng string) error { ngs = append(ngs, ng); return nil })
 }
