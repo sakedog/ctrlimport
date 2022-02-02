@@ -12,11 +12,13 @@ import (
 const doc = "ctrlimport finds imports are not allowed"
 
 var (
-	oks []string
-	ngs []string
+	ignoreTest bool
+	oks        []string
+	ngs        []string
 )
 
 func init() {
+	Analyzer.Flags.BoolVar(&ignoreTest, "ignore-test", false, "ignore test files?")
 	Analyzer.Flags.Func("ok", "allowed import paths", func(ok string) error { oks = append(oks, ok); return nil })
 	Analyzer.Flags.Func("ng", "prohibited import paths", func(ng string) error { ngs = append(ngs, ng); return nil })
 }
@@ -33,6 +35,10 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	ctrl := parse(oks, ngs)
 
 	for _, f := range pass.Files {
+		if ignoreTest && isTestPKG(f.Name.Name) {
+			continue
+		}
+
 		for _, ip := range f.Imports {
 			path, err := strconv.Unquote(ip.Path.Value)
 			if err != nil {
@@ -45,6 +51,10 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		}
 	}
 	return nil, nil
+}
+
+func isTestPKG(pkg string) bool {
+	return strings.HasSuffix(pkg, "_test")
 }
 
 type ctrl struct {

@@ -11,8 +11,6 @@ import (
 
 // TestAnalyzer is a test for Analyzer.
 func TestAnalyzer(t *testing.T) {
-	testdata := testutil.WithModules(t, analysistest.TestData(), nil)
-
 	setupFlags(t, "ng",
 		"github.com/google/go-cmp/...",
 		"net/http/httptest",
@@ -22,7 +20,28 @@ func TestAnalyzer(t *testing.T) {
 		"github.com/google/go-cmp/cmp",
 	)
 
-	analysistest.RunWithSuggestedFixes(t, testdata, ctrlimport.Analyzer, "a")
+	t.Run("pakcage", func(t *testing.T) {
+		analysistest.RunWithSuggestedFixes(
+			t,
+			testutil.WithModules(t, analysistest.TestData(), nil),
+			ctrlimport.Analyzer,
+			"a",
+		)
+	})
+
+	t.Run("pakcage_test", func(t *testing.T) {
+		if err := ctrlimport.Analyzer.Flags.Set("ignore-test", "true"); err != nil {
+			t.Fatal(err)
+		}
+
+		analysistest.RunWithSuggestedFixes(
+			t,
+			testutil.WithModules(t, analysistest.TestData(), nil),
+			ctrlimport.Analyzer,
+			"b",
+		)
+	})
+
 }
 
 func setupFlags(t *testing.T, flag string, paths ...string) {
